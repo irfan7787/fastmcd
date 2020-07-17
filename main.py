@@ -11,7 +11,8 @@ mcd = MCDWrapper.MCDWrapper()
 isFirst = True
 
 # main path of data
-path = '/home/gentoowork/Desktop/dataset/PTZ/zoomInZoomOut/'
+# path = '/home/gentoowork/Desktop/dataset/PTZ/zoomInZoomOut/'
+path = '../Desktop/Dataset/Change Detection Dataset/dataset2014/dataset/PTZ/zoomInZoomOut/'
 
 
 # counter for mask files
