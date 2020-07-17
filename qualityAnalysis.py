@@ -1,4 +1,5 @@
 import numpy as np
+from sklearn.metrics import confusion_matrix
 
 # sample matrices
 # groundTruth = np.array([[1, 0, 1], [0, 0, 1], [1, 0, 1], [1, 1, 0]])
@@ -79,18 +80,23 @@ class qualityAnalysis:
         self.specificityList.append(spec)
         return spec
 
-    def newParameter(self, groundTruth, predicted):
+    def find_metrics(self, true_values, estimated):
+    
+        confusion = confusion_matrix(true_values.ravel(),estimated.ravel())
+        
+        tn = confusion[0,0]
+        fn = confusion[1,0]
+        tp = confusion[1,1]
+        fp = confusion[0,1]
+        
+        return tn, fn, tp, fp
+
+    def compare(self, groundTruth, predicted):
         groundTruth = groundTruth
         predicted = predicted
-        # inverted matrices
-        predictedI = np.logical_not(predicted).astype(int)
-        groundTruthI = np.logical_not(groundTruth).astype(int)
 
         # confusion matrix
-        self.TP = np.sum(np.multiply(groundTruth, predicted))
-        self.TN = np.sum(np.multiply(groundTruthI, predictedI))
-        self.FP = np.sum(np.multiply(groundTruthI, predicted))
-        self.FN = np.sum(np.multiply(groundTruth, predictedI))
+        self.TN, self.FN, self.TP, self.FP = self.find_metrics(groundTruth, predicted)
 
         self.__dice()
         self.__F1()

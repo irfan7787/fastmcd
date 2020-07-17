@@ -4,11 +4,12 @@ import cv2
 import numpy as np
 
 # main path of data
-path = '/home/gentoowork/Desktop/dataset/PTZ/zoomInZoomOut/'
+# path = '../Desktop/dataset/PTZ/zoomInZoomOut/'
+path = '../Desktop/Dataset/Change Detection Dataset/dataset2014/dataset/PTZ/zoomInZoomOut/'
 
 roiName = 'ROI.bmp'
 temporalRoiFirst = 500
-temporalRoiLast = 1130
+temporalRoiLast = 814
 
 # reading input and groundtruth files
 dr = dataReader()
@@ -21,14 +22,21 @@ binaryRoi = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
 
 qa = qualityAnalysis()
 
-for i in (temporalRoiFirst-1, temporalRoiLast-1):
+for i in range(temporalRoiFirst-1, temporalRoiLast):
+# for i in range(651,652): 
     groundTruth = cv2.imread(groundTruthFiles[i])
     groundTruth = cv2.cvtColor(groundTruth, cv2.COLOR_BGR2GRAY)
+    groundTruth[groundTruth>0] = 1
+
     mask = cv2.imread(maskFiles[i])
     mask = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
-    np.multiply(groundTruth, binaryRoi)
-    np.multiply(mask, binaryRoi)
-    qa.newParameter(groundTruth, mask)
+    mask[mask>0] = 1
+
+    groundTruth = np.multiply(groundTruth, binaryRoi)
+    mask = np.multiply(mask, binaryRoi)
+    qa.compare(groundTruth, mask)
+    print(i)
     print(qa.printIterationResults())
 
+print("\n ***Mean values*** \n ")
 print(qa.results())

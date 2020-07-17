@@ -43,7 +43,8 @@ for f in files:
         mask = mcd.run(gray)
     frame[mask > 0, 2] = 255
     if isSaveMask:
-        cv2.imwrite(str(path)+'mask/'+str(counter)+'.jpg', mask)
+        tempName = f.split("/")[-1].replace("in","mask")
+        cv2.imwrite(str(path)+'mask/'+tempName, mask)
         counter = counter+1
     cv2.imshow('frame', frame)
 
