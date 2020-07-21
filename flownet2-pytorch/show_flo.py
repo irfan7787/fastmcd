@@ -1,6 +1,7 @@
 import os
 import cv2
 import numpy as np
+import getpass
 
 def readFlo(filename, w, h):
     f = open(filename,'rb')
@@ -32,7 +33,10 @@ def magToImg(mag):
     return cv2.normalize(mag, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
 
 
-path = '/home/ibrahim/Desktop/Dataset/Change Detection Dataset/dataset2014/dataset/PTZ/zoomInZoomOut/'
+path = 'dataset/PTZ/zoomInZoomOut/'
+
+if getpass.getuser() == 'ibrahim':
+    path = '/home/ibrahim/Desktop/Dataset/Change Detection Dataset/dataset2014/dataset/PTZ/zoomInZoomOut/'
 
 inputFiles = readFiles(path+'input', 'jpg')
 flowFiles = readFiles(path+'flow', 'flo')

@@ -2,10 +2,12 @@ from dataReader import dataReader
 from qualityAnalysis import  qualityAnalysis
 import cv2
 import numpy as np
+import getpass
 
 # main path of data
-# path = '../Desktop/dataset/PTZ/zoomInZoomOut/'
-path = '../Desktop/Dataset/Change Detection Dataset/dataset2014/dataset/PTZ/zoomInZoomOut/'
+path = '../Desktop/dataset/PTZ/zoomInZoomOut/'
+if getpass.getuser() == 'ibrahim':
+    path = '../Desktop/Dataset/Change Detection Dataset/dataset2014/dataset/PTZ/zoomInZoomOut/'
 
 roiName = 'ROI.bmp'
 temporalRoiFirst = 500

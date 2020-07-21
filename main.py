@@ -2,8 +2,7 @@ import numpy as np
 import cv2
 import MCDWrapper
 from dataReader import dataReader
-
-
+import getpass
 
 
 np.set_printoptions(precision=2, suppress=True)
@@ -11,9 +10,11 @@ mcd = MCDWrapper.MCDWrapper()
 isFirst = True
 
 # main path of data
-# path = '/home/gentoowork/Desktop/dataset/PTZ/zoomInZoomOut/'
-path = '../Desktop/Dataset/Change Detection Dataset/dataset2014/dataset/PTZ/zoomInZoomOut/'
-# path = '../Desktop/Dataset/Change Detection Dataset/dataset2014/dataset/PTZ/twoPositionPTZCam/'
+path = '/home/gentoowork/Desktop/dataset/PTZ/zoomInZoomOut/'
+
+if getpass.getuser() == 'ibrahim':
+    path = '../Desktop/Dataset/Change Detection Dataset/dataset2014/dataset/PTZ/zoomInZoomOut/'
+    # path = '../Desktop/Dataset/Change Detection Dataset/dataset2014/dataset/PTZ/twoPositionPTZCam/'
 
 
 # counter for mask files
