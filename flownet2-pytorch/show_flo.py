@@ -36,18 +36,27 @@ def magToImg(mag):
 path = 'dataset/PTZ/zoomInZoomOut/'
 
 if getpass.getuser() == 'ibrahim':
-    path = '/home/ibrahim/Desktop/Dataset/Change Detection Dataset/dataset2014/dataset/PTZ/zoomInZoomOut/'
+    path = '/home/ibrahim/Desktop/Dataset/Change Detection Dataset/dataset2014/dataset/PTZ/continuousPan/'
 
 inputFiles = readFiles(path+'input', 'jpg')
 flowFiles = readFiles(path+'flow', 'flo')
 
+out = cv2.VideoWriter('output.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 30, (320 * 2 ,240))
+
 for i in range(0, len(inputFiles)-1):
     img = cv2.imread(inputFiles[i])
-    flow = readFlo(flowFiles[i+1], img.shape[1], img.shape[0])
+    flow = readFlo(flowFiles[i], img.shape[1], img.shape[0])
 
     cv2.imshow("img", img)
 
     mag = findMag(flow[:,:,0], flow[:,:,1])
     magIm = magToImg(mag)
     cv2.imshow("flow", magIm)
-    cv2.waitKey(0)
+
+    magIm = cv2.cvtColor(magIm, cv2.COLOR_GRAY2RGB)
+    outIm = np.concatenate((img, magIm), axis=1)
+    out.write(outIm)
+
+    cv2.waitKey(10)
+
+out.release()

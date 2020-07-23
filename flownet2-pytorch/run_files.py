@@ -45,8 +45,7 @@ if __name__ == '__main__':
     dict = torch.load("/home/ibrahim/Desktop/ornek-projeler/flownet2-pytorch/checkpoints/FlowNet2_checkpoint.pth.tar")
     net.load_state_dict(dict["state_dict"])
 
-    isResized = False
-    path = '/home/ibrahim/Desktop/Dataset/Change Detection Dataset/dataset2014/dataset/PTZ/zoomInZoomOut/'
+    path = '/home/ibrahim/Desktop/Dataset/Change Detection Dataset/dataset2014/dataset/PTZ/twoPositionPTZCam/'
 
     inputFiles = readFiles(path+'input', 'jpg')
 
@@ -56,10 +55,23 @@ if __name__ == '__main__':
         pim2 = read_gen(inputFiles[i+1])
 
         height, width, d = pim1.shape
+        isResized = False
 
-        if height == 240:
+        if width == 320 and height == 240:
             pim1 = cv2.resize(pim1, (320,256))
             pim2 = cv2.resize(pim2, (320,256))
+            isResized = True
+        elif width == 704 and height == 480:
+            pim1 = cv2.resize(pim1, (704,512))
+            pim2 = cv2.resize(pim2, (704,512))
+            isResized = True
+        elif width == 560 and height == 368:
+            pim1 = cv2.resize(pim1, (576,384))
+            pim2 = cv2.resize(pim2, (576,384))
+            isResized = True
+        elif width == 570 and height == 340:
+            pim1 = cv2.resize(pim1, (576,384))
+            pim2 = cv2.resize(pim2, (576,384))
             isResized = True
 
         start = cv2.getTickCount()
