@@ -139,8 +139,7 @@ class qualityAnalysis:
 
         return [self.diceList[-1], self.f1List[-1], self.fnrList[-1], self.fprList[-1], self.iouList[-1], self.precisionList[-1], self.recallList[-1], self.specificityList[-1]]
 
-    def results(self):
-
+    def results(self, path):
         dice = np.mean(self.diceList)
         f1 = np.mean(self.f1List)
         fnr = np.mean(self.fnrList)
@@ -150,8 +149,15 @@ class qualityAnalysis:
         recall = np.mean(self.recallList)
         spec = np.mean(self.specificityList)
         print("[dice f1 fnr fpr iou precision recall spec]")
+        file = open(str(path) + "results.txt", 'w')
+        file.write("\n****** Results *****\n")
+        file.write("\nPath: " + str(path) + "\n")
+        file.write("\nDice: {:.4f}".format(dice))
+        file.write("\nF1: {:.4f}".format(f1))
+        file.write("\nFNR: {:.4f}".format(fnr))
+        file.write("\nFPR: {:.4f}".format(fpr))
+        file.write("\nIoU: {:.4f}".format(iou))
+        file.write("\nPrecision: {:.4f}".format(precision))
+        file.write("\nRecall: {:.4f}".format(recall))
+        file.write("\nSpec: {:.4f}".format(spec))
         return [dice, f1, fnr, fpr, iou, precision, recall, spec]
-
-
-
-
