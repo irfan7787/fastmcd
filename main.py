@@ -10,7 +10,7 @@ mcd = MCDWrapper.MCDWrapper()
 isFirst = True
 
 # main path of data
-path = '/home/gentoowork/Desktop/dataset/PTZ/zoomInZoomOut/'
+path = '/home/gentoo/Desktop/motionDetectionData/PTZ/zoomInZoomOut/'
 
 if getpass.getuser() == 'ibrahim':
     path = '../Desktop/Dataset/Change Detection Dataset/dataset2014/dataset/PTZ/zoomInZoomOut/'
@@ -57,7 +57,7 @@ for f in files:
 
     frame[mask > 0, 2] = 255
     if isSaveMask:
-        tempName = f.split("/")[-1].replace("in","mask")
+        tempName = f.split("/")[-1].replace("in", "mask")
         cv2.imwrite(str(path)+'mcdMask/'+tempName, mask)
         counter = counter+1
     cv2.imshow('frame', frame)
