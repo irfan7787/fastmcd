@@ -7,16 +7,18 @@ import getpass
 # main path of data
 path = '../Desktop/dataset/PTZ/zoomInZoomOut/'
 if getpass.getuser() == 'ibrahim':
-    path = '../Desktop/Dataset/Change Detection Dataset/dataset2014/dataset/PTZ/zoomInZoomOut/'
+    path = '../Desktop/Dataset/Change Detection Dataset/dataset2014/dataset/PTZ/intermittentPan/'
 
 roiName = 'ROI.bmp'
-temporalRoiFirst = 500
-temporalRoiLast = 814
+f = open(path+"temporalROI.txt", "r")
+line = f.readline()
+temporalRoiFirst, temporalRoiLast = [int(i) for i in line.split()]
+f.close()
 
 # reading input and groundtruth files
 dr = dataReader()
 groundTruthFiles = dr.readFiles(str(path)+'groundtruth', ".png")
-maskFiles = dr.readFiles(str(path)+'mask', 'jpg')
+maskFiles = dr.readFiles(str(path)+'mcdMask', 'jpg')
 
 
 roi = cv2.imread(str(path)+'ROI.bmp')

@@ -45,14 +45,15 @@ if __name__ == '__main__':
     dict = torch.load("/home/ibrahim/Desktop/ornek-projeler/flownet2-pytorch/checkpoints/FlowNet2_checkpoint.pth.tar")
     net.load_state_dict(dict["state_dict"])
 
-    path = '/home/ibrahim/Desktop/Dataset/Change Detection Dataset/dataset2014/dataset/PTZ/twoPositionPTZCam/'
+    path = '/home/ibrahim/Desktop/Dataset/Change Detection Dataset/dataset2014/dataset/PTZ/continuousPan/'
 
     inputFiles = readFiles(path+'input', 'jpg')
+    step = 8
 
-    for i in range(0, len(inputFiles)-1):
+    for i in range(step, len(inputFiles)):
         # load the image pair, you can find this operation in dataset.py
         pim1 = read_gen(inputFiles[i])
-        pim2 = read_gen(inputFiles[i+1])
+        pim2 = read_gen(inputFiles[i-step])
 
         height, width, d = pim1.shape
         isResized = False
@@ -75,7 +76,7 @@ if __name__ == '__main__':
             isResized = True
 
         start = cv2.getTickCount()
-        images = [pim2, pim1]
+        images = [pim1, pim2]
         images = np.array(images).transpose(3, 0, 1, 2)
         im = torch.from_numpy(images.astype(np.float32)).unsqueeze(0).cuda()
 
@@ -90,6 +91,6 @@ if __name__ == '__main__':
         elapsed_time = (cv2.getTickCount()-start)/cv2.getTickFrequency()
         print ('**************** elapsed time: %.3fs'%elapsed_time)
 
-        tempName = inputFiles[i+1].replace("input","flow")
+        tempName = inputFiles[i].replace("input","flow")
         tempName = tempName.replace(".jpg",".flo")
         writeFlow(tempName, data)
