@@ -53,6 +53,7 @@ isSaveMask = True
 savingFolder = "mcdMask/"
 if applyFlow:
     savingFolder = "mcdFlowMask/"
+    mcd.setApplyFlow()
 
 isStopped = False
 i = 0

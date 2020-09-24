@@ -16,17 +16,8 @@ def flow2motion(flow):
     cv2.imshow("mag", magIm)
     # print("mag min: %.3f  max: %.3f  std: %.3f" %(np.min(mag), np.max(mag), np.std(mag)))
 
-    # w,h = mag.shape
-    # points = []
-    # for m in range(int(h//16), h, int(h//16)):
-    #     for n in range(int(w//16), w, int(w//16)):        
-    #         points.append(mag[n, m])
-
-    # minDense, maxDense, stdMagDense, meanDense = np.min(points), np.max(points), np.std(points), np.mean(points)
-    # print("mag min: %.3f  max: %.3f  std: %.3f  mean: %.3f " %(minDense, maxDense, stdMagDense, meanDense))
-
-    motion = cv2.adaptiveThreshold(magIm, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 11, 10)
-    #ret, motion = cv2.threshold(magIm,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+    # motion = cv2.adaptiveThreshold(magIm, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 11, 10)
+    ret, motion = cv2.threshold(magIm,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
     
     return mag, motion
 
