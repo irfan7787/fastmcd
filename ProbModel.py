@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 import itertools
+from utils import flow2motion
 
 class ProbModel:
     def __init__(self):
@@ -22,6 +23,11 @@ class ProbModel:
         self.modelHeight = None
         self.obsWidth = None
         self.obsHeight = None
+        self.bgMeanList = []
+        self.applyFlow = False
+
+    def setApplyFlow(self):
+        self.applyFlow = True
 
     def init(self, gray):
         (self.obsHeight, self.obsWidth) = gray.shape
@@ -53,15 +59,15 @@ class ProbModel:
         res = temp.reshape(sh).max(-1).max(1)
         return res[:res.shape[0] - f[0], : res.shape[1] - f[1]]
 
-    def motionCompensate(self, H):
+    def motionCompensate(self, Homo, flow=None):
 
         I = np.array([range(self.modelWidth)]*self.modelHeight).flatten()
         J = np.repeat(range(self.modelHeight), self.modelWidth)
 
 
         points = np.asarray([I*self.BLOCK_SIZE+self.BLOCK_SIZE/2, J*self.BLOCK_SIZE + self.BLOCK_SIZE/2, np.ones(len(I))])
-
-        tempMean = H.dot(points)
+        
+        tempMean = Homo.dot(points)
         NewW = tempMean[2, :]
         NewX = (tempMean[0, :]/NewW)
         NewY = (tempMean[1, :]/NewW)
@@ -149,16 +155,29 @@ class ProbModel:
                                                                            2))
 
 
+        # cv2.imshow("tempMean ", cv2.normalize(src=tempMean[0] , dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U))
+        # cv2.imshow("tempMean-1", cv2.normalize(src=tempMean[1] , dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U))
+        # cv2.imshow("temp_var", cv2.normalize(src=temp_var[0], dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U))
+        # cv2.imshow("temp_var-1", cv2.normalize(src=temp_var[1], dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U))
+        # cv2.imshow("tempAges", cv2.normalize(src=tempAges[0] , dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U))
+        # cv2.imshow("tempAges-1", cv2.normalize(src=tempAges[1], dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U))
+
         self.temp_vars = temp_var / W
         cond = (idxNewJ < 1) | (idxNewJ >= self.modelHeight - 1) | (idxNewI < 1) | (idxNewI >= self.modelWidth - 1)
         self.temp_vars[:, J[cond], I[cond]] = self.INIT_BG_VAR
         self.temp_ages[:, J[cond], I[cond]] = 0
         self.temp_vars[self.temp_vars < self.MIN_BG_VAR] = self.MIN_BG_VAR
+            
+        # cv2.imshow("tempMean ", cv2.normalize(src=self.temp_means[0] , dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U))
+        # cv2.imshow("tempMean-1", cv2.normalize(src=self.temp_means[1] , dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U))
+        # cv2.imshow("temp_var", cv2.normalize(src=self.temp_vars[0], dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U))
+        # cv2.imshow("temp_var-1", cv2.normalize(src=self.temp_vars[1], dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U))
+        # cv2.imshow("tempAges", cv2.normalize(src=self.temp_ages[0] , dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U))
+        # cv2.imshow("tempAges-1", cv2.normalize(src=self.temp_ages[1], dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U))
 
 
 
-
-    def update(self, gray):
+    def update(self, gray, flow=None):
         curMean = self.rebin(gray, (self.BLOCK_SIZE, self.BLOCK_SIZE))
         mm = self.NUM_MODELS - np.argmax(self.temp_ages[::-1], axis=0).reshape(-1) - 1
         maxes = np.max(self.temp_ages, axis=0)
@@ -207,12 +226,17 @@ class ProbModel:
 
         maxes = self.rebinMax(np.power(gray - bigMeanIndex, 2), (self.BLOCK_SIZE, self.BLOCK_SIZE))
         self.distImg = np.power(gray - bigMean, 2)
-        out = np.zeros(gray.shape).astype(np.uint8)
+        out = np.zeros(gray.shape).astype(np.uint8)        
         out[(bigAges > 1) & (self.distImg > self.VAR_THRESH_FG_DETERMINE * bigVars)] = 255
+
+        # cv2.imshow("distImg ", cv2.normalize(src=self.distImg , dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U))
+        # cv2.imshow("bigMean", cv2.normalize(src=bigMean, dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U))
+        # cv2.imshow("bigVars", cv2.normalize(src=bigVars, dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U))
+        # cv2.imshow("bigAges", cv2.normalize(src=bigAges, dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U))
 		
         alpha = self.temp_ages / (self.temp_ages + 1)
         alpha[~modelIndexMask] = 1
-
+        
         self.vars = self.temp_vars * alpha + (1 - alpha) * maxes
 
         self.vars[(self.vars < self.INIT_BG_VAR) & modelIndexMask & (self.ages == 0)] = self.INIT_BG_VAR
@@ -221,5 +245,46 @@ class ProbModel:
         self.ages = self.temp_ages.copy()
         self.ages[modelIndexMask] += 1
         self.ages[modelIndexMask & (self.ages > 30)] = 30
+
+        if self.applyFlow and flow is not None:
+
+            mag, motion = flow2motion(flow)
+            #cv2.imshow("motion from flow", motion)
+
+            if len(mag[out==0]) == 0 or len(mag[out==255]) == 0:
+                return out
+
+            changeBgMean = np.mean(mag[out==0])
+            changeFgMean = np.mean(mag[out>0])
+            
+            self.bgMeanList.append(changeBgMean)
+            if len(self.bgMeanList) > 10:
+                del self.bgMeanList[0]
+
+            if max(self.bgMeanList) - min(self.bgMeanList) > 50:
+                print("suddenly BG change, return zero")
+                return np.zeros(gray.shape).astype(np.uint8)  
+
+            print("backgroung mean change of magnitude: %.3f  FG: %.3f" %(changeBgMean, changeFgMean))
+
+            meanMotionFlow = np.mean(mag[motion>0])
+            print("mean of motion detected from Flow: ", meanMotionFlow)
+            if (meanMotionFlow - changeBgMean) < 10:
+                print("flow motion result can not be trusted!!")
+                motion[:] = 0
+
+            if changeBgMean > 5: ## means camera is moving!
+                
+                contours, _ = cv2.findContours(motion, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+                
+                for cnt in contours:
+                    x,y,w,h = cv2.boundingRect(cnt)
+                    motion[y:y+h, x:x+w] = out[y:y+h, x:x+w]
+
+                out = motion
+            else:
+                out = out + motion
+
+            # cv2.imshow("motion processed", motion)
 
         return out

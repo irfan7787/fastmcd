@@ -62,5 +62,30 @@ class KLTWrapper:
             self.H = np.identity(3)
         self.InitFeatures(image)
 
+
+    def RunTrackwithFlow(self, image, flow):
+        
+        w,h,_ = flow.shape
+        points = []
+        for i in range(int(h//16), h-120, int(h//16)):
+            for j in range(int(w//16), w-20, int(w//16)):        
+                points.append([i,j])
+
+        # imageNew = cv2.resize(image,(h,w))
+        # newPoints = imageNew + flow[:,:,0] + flow[:,:,1]
+        
+        good1 = np.reshape(points, (len(points),2)).astype(np.float32)
+        good2 = []
+        for x,y in points:
+            good2.append( [x + flow[x,y,0], y + flow[x,y,1]] )
+
+        good2 = np.reshape(good2, (len(points),2))
+    
+        # self.makeHomoGraphy(good1, good2)
+        self.H, status = cv2.findHomography(good1, good2, cv2.RANSAC, 1.0)
+        im_warped = cv2.warpPerspective(image, self.H, (image.shape[1], image.shape[0]))
+        cv2.imshow("warped", im_warped)
+        self.InitFeatures(image)
+
     def makeHomoGraphy(self, p1, p2):
         self.H, status = cv2.findHomography(p1, p2, cv2.RANSAC, 1.0)

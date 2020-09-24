@@ -13,7 +13,7 @@ if getpass.getuser() == 'gentoo':
     path = '/home/gentoo/Desktop/motionDetectionData/PTZ/twoPositionPTZCam/'
 
 if getpass.getuser() == 'ibrahim':
-    path = '../Desktop/Dataset/Change Detection Dataset/dataset2014/dataset/PTZ/intermittentPan/'
+    path = '../Desktop/Dataset/Change Detection Dataset/dataset2014/dataset/PTZ/continuousPan/'
 
 roiName = 'ROI.bmp'
 f = open(path+"temporalROI.txt", "r")
@@ -40,22 +40,26 @@ for i in range(temporalRoiFirst - 1, temporalRoiLast):
     groundTruth = cv2.imread(groundTruthFiles[i])
     groundTruth = cv2.cvtColor(groundTruth, cv2.COLOR_BGR2GRAY)
     groundTruth[groundTruth > 0] = 1
+
+    if i>= len(maskFiles):
+        break
     mask = cv2.imread(maskFiles[i])
     mask = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
     mask[mask > 0] = 1
     input = cv2.imread(inputFiles[i])
+    
 
-    # cv2.imshow('input', input)
-    # cv2.imshow('mcd', mask)
-    # cv2.imshow('groundtruth', groundTruth)
+    cv2.imshow('input', input)
+    cv2.imshow('mask', mask * 255)
+    cv2.imshow('groundtruth', groundTruth*255)
 
     if (groundTruth.size != np.sum(groundTruth)):  # skipping non-labeled frames
         groundTruth = np.multiply(groundTruth, binaryRoi)
         mask = np.multiply(mask, binaryRoi)
         qa.compare(groundTruth, mask)
-        print(i)
-        print(qa.printIterationResults())
-    #cv2.waitKey(0)
+        # print(i)
+        # print(qa.printIterationResults())
+    cv2.waitKey(10)
 
 print("\n ***Mean values*** \n ")
 print(qa.results(path))

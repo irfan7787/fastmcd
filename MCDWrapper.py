@@ -19,8 +19,10 @@ class MCDWrapper:
         self.lucasKanade.init(self.imgGray)
         self.model.init(self.imgGray)
 
+    def setApplyFlow(self):
+        self.model.setApplyFlow()
 
-    def run(self, frame):
+    def run(self, frame, flow):
         self.frm_cnt += 1
         self.imgIpl = frame
         self.imgGray = frame
@@ -29,8 +31,9 @@ class MCDWrapper:
             self.imgGrayPrev = self.imgGray.copy()
         
         self.lucasKanade.RunTrack(self.imgGray, self.imgGrayPrev)
-        self.model.motionCompensate(self.lucasKanade.H)
-        mask = self.model.update(frame)
+        # self.lucasKanade.RunTrackwithFlow(self.imgGray, flow)
+        self.model.motionCompensate(self.lucasKanade.H, flow)
+        mask = self.model.update(frame, flow)
         self.imgGrayPrev = self.imgGray.copy()
         return mask
 

@@ -1,0 +1,52 @@
+RESULTS
+**********************************************
+
+zoomInZoomOut - 315 images
+
+Dice: 0.2903
+F1: 0.2903
+FNR: 0.7492
+FPR: 0.0058
+IoU: 0.1798
+Precision: 0.4667
+Recall: 0.2508
+Spec: 0.9942
+
+**********************************************
+
+intermittentPan -  images
+
+Dice: 0.1882
+F1: 0.1882
+FNR: nan
+FPR: 0.0174
+IoU: 0.1108
+Precision: 0.4888
+Recall: 0.1440
+Spec: 0.9826
+
+**********************************************
+
+ContinuousPan -  images
+
+Dice: nan
+F1: 0.8451
+FNR: nan
+FPR: 0.0049
+IoU: 0.0097
+Precision: 0.9446
+Recall: 0.0230
+Spec: 0.9951
+
+**********************************************
+
+twoPositionPTZCam -  images
+
+Dice: nan
+F1: 0.3201
+FNR: nan
+FPR: 0.0056
+IoU: 0.1439
+Precision: 0.4751
+Recall: 0.2128
+Spec: 0.9944
