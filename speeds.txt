@@ -1,24 +1,32 @@
-SPEEDS - FLOWNET2CSS
+SPEEDS - FLOWNET2CSS & MCD
 **********************************************
 
 zoomInZoomOut
 
-320 x 240 ->   320 x 256  24 ms
+320 x 240 ->   320 x 256  24 ms   fps: 41.6
+
+MCD: 14 ms   fps: 71.4
 
 **********************************************
 
 intermittentPan
 
-560 X 368 ->     576 X 384 = 41 ms
+560 X 368 ->     576 X 384 = 41 ms   fps: 24.4
+
+MCD: 30 ms   fps: 33.3
 
 **********************************************
 
-ContinuousPan
+continuousPan
 
-704 X 480 ->     704 X 512 = 62 ms   
+704 X 480 ->     704 X 512 = 62 ms   fps: 16.1
+
+MCD: 44 ms  fps:22.7
 
 **********************************************
 
 twoPositionPTZCam
 
-570 x 340 ->     576 x 384 = 41 ms
+570 x 340 ->     576 x 384 = 41 ms   fps: 24.4
+
+MCD: 26 ms   fps:38.4

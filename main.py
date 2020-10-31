@@ -29,7 +29,7 @@ path = '/home/gentoo/Desktop/motionDetectionData/PTZ/zoomInZoomOut/'
 
 if getpass.getuser() == 'ibrahim':
     path = '../Desktop/Dataset/Change Detection Dataset/dataset2014/dataset/PTZ/continuousPan/'
-    # path = '../Desktop/Dataset/Change Detection Dataset/dataset2014/dataset/PTZ/zoomInZoomOut/'
+    # path = '../Desktop/Dataset/Change Detection Dataset/dataset2014/dataset/PTZ/intermittentPan/'
 
 
 # counter for mask files
@@ -55,6 +55,8 @@ if applyFlow:
     savingFolder = "mcdFlowMask/"
     mcd.setApplyFlow()
 
+flow, flowPrev = None, None
+total=[]
 isStopped = False
 i = 0
 while i<len(files):
@@ -82,6 +84,9 @@ while i<len(files):
     gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
 
     flow = readFlow(flowFiles[i-8])
+    # if i%2 == 0 and flowPrev is not None:
+    #     flow = flowPrev
+    #     # print("using previous flow")
 
     i +=1
 
@@ -97,6 +102,7 @@ while i<len(files):
         gray = cv2.resize(gray, ( 4 * (width//4), 4 * (height//4)))
         isResized = True
 
+    start = cv2.getTickCount()
     mask = np.zeros(gray.shape, np.uint8)
     if isFirst:
         mcd.init(gray)
@@ -110,9 +116,17 @@ while i<len(files):
     frame[mask == 255, 2] = 255
     frame[mask == 100, 0] = 255
 
+    elapsed_time = (cv2.getTickCount()-start)/cv2.getTickFrequency()
+    total.append(elapsed_time)
+    print ('**************** elapsed time: %.3fs'%elapsed_time)
+
     if isSaveMask:
         tempName = f.split("/")[-1].replace("in", "mask")
         cv2.imwrite(str(path)+ savingFolder + tempName, mask)
         counter = counter+1
     cv2.imshow('frame', frame)
 
+    flowPrev = flow
+
+
+print("mean elapsed time: ", np.mean(total))
