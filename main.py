@@ -28,7 +28,7 @@ isFirst = True
 path = '/home/gentoo/Desktop/motionDetectionData/PTZ/zoomInZoomOut/'
 
 if getpass.getuser() == 'ibrahim':
-    path = '../Desktop/Dataset/Change Detection Dataset/dataset2014/dataset/PTZ/continuousPan/'
+    path = '/home/ibrahim/Desktop/Dataset/Change Detection Dataset/dataset2014/dataset/PTZ/zoomInZoomOut/'
     # path = '../Desktop/Dataset/Change Detection Dataset/dataset2014/dataset/PTZ/intermittentPan/'
 
 
